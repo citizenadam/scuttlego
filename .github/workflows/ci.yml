@@ -8,7 +8,12 @@ on:
     branches:
       - 'main'
       - 'feature/**'
-
+  workflow_dispatch:
+    inputs:
+      environment:
+        type: string
+        default: main
+        required: true
 jobs:
 
   ci:
