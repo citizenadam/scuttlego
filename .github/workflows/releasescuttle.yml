@@ -1,0 +1,96 @@
+name: CI/CD
+
+on:
+  push:
+    branches:
+      - 'main'
+  pull_request:
+    branches:
+      - 'main'
+      - 'feature/**'
+  workflow_dispatch:
+    inputs:
+      environment:
+        type: string
+        default: main
+        required: true
+
+jobs:
+
+  ci:
+    name: Run CI
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        go-version: [ '1.20' ]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.go-version }}
+          cache: 'true'
+
+      - name: Determine Go cache paths
+        id: golang-path
+        run: |
+          echo "build=$(go env GOCACHE)" >>"$GITHUB_OUTPUT"
+          echo "module=$(go env GOMODCACHE)" >>"$GITHUB_OUTPUT"
+        shell: bash
+
+      - name: Setup Go cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ steps.golang-path.outputs.build }}
+            ${{ steps.golang-path.outputs.module }}
+          key: ${{ runner.os }}-golang-${{ hashFiles('**/go.sum', 'Makefile') }}
+          restore-keys: |
+            ${{ runner.os }}-golang-
+
+      - name: Run tests
+        run: make ci
+
+  release:
+    name: Create Release
+    needs: ci
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'  # Only on pushes to main
+    permissions:
+      contents: write  # Grant permission to create releases
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch all tags for versioning
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.20' # Use the same Go version or a compatible one for release
+
+      - name: Build Release Artifacts
+        run: make build-release  # Your build command.  Create this target in your Makefile
+
+      - name: Get the next version (basic example)
+        id: get_version
+        run: |
+          VERSION=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Create Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.get_version.outputs.version }}
+          release_name: Release ${{ steps.get_version.outputs.version }}
+          body: |
+            # Release notes.  Consider using a changelog generator.
+            * Changes in this release...
+            * ...
+          files: |
+            build/scuttlego/artifact1.zip 
+            build/scuttlego/artifact2.tar.gz 
