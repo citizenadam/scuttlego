@@ -16,7 +16,6 @@ on:
         required: true
 
 jobs:
-
   release:
     name: Create Release
     needs: ci
