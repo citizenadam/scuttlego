@@ -1,46 +1,39 @@
-.PHONY: ci build-release generate fmt test tidy lint tools
-
-ci: tools test lint generate fmt tidy
-
-.PHONY: generate
+ci: tools test lint generate fmt tidy.PHONY: generate
 generate:
-	go generate ./...
-
-.PHONY: fmt
+	go generate./....PHONY: fmt
 fmt:
-	gosimports -l -w ./
-
-.PHONY: test
+	gosimports -l -w./.PHONY: test
 test:
-	go test -race ./...
-
-.PHONY: tidy
+	go test -race./....PHONY: tidy
 tidy:
-	go mod tidy
-
-.PHONY: lint
+	go mod tidy.PHONY: lint
 lint:
-	go vet ./...
-	golangci-lint run ./...
-
-.PHONY: tools
+	go vet./...
+	golangci-lint run./....PHONY: tools
 tools:
 	go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.64.2
-	go install github.com/rinchsan/gosimports/cmd/gosimports@v0.3.8
-
-.PHONY: build-release  # Separate build-release target
+	go install github.com/rinchsan/gosimports/cmd/gosimports@v0.3.8.PHONY: build-release
 build-release:
-	mkdir -p build/scuttlego  # Create the nested build directory
+	rm -rf build
+	mkdir -p build/scuttlego/cmd/log-debugger/linux-amd64
+	GOOS=linux GOARCH=amd64 go build -v -o build/scuttlego/cmd/log-debugger/linux-amd64/log-debugger./cmd/log-debugger
 
-	# Example: Build for Linux (adjust as needed)
-	GOOS=linux GOARCH=amd64 go build -o build/scuttlego/scuttlego-linux-amd64 ./...
+	mkdir -p build/scuttlego/cmd/log-debugger/darwin-amd64
+	GOOS=darwin GOARCH=amd64 go build -v -o build/scuttlego/cmd/log-debugger/darwin-amd64/log-debugger./cmd/log-debugger
 
-	# Example: Build for macOS (adjust as needed)
-	GOOS=darwin GOARCH=amd64 go build -o build/scuttlego/scuttlego-darwin-amd64 ./...
+        # Other platforms for log-debugger
 
-	# Example: Create zip archives (optional, but recommended)
-	zip -r build/scuttlego/artifact1.zip build/scuttlego/scuttlego-linux-amd64
-	zip -r build/scuttlego/artifact2.zip build/scuttlego/scuttlego-darwin-amd64
+        # Only include the following if scuttlego is a main package
+        # with a main function you want to build:
+	mkdir -p build/scuttlego/linux-amd64
+	GOOS=linux GOARCH=amd64 go build -v -o build/scuttlego/linux-amd64/scuttlego./
 
-	# Add other platforms/architectures/archives as needed.
-	# Ensure that the files created here match the paths in your GitHub Actions workflow.
+        # Other platforms for scuttlego
+
+        # Create zip archives (optional, but recommended)
+	zip -r build/scuttlego/cmd/log-debugger-linux-amd64.zip build/scuttlego/cmd/log-debugger/linux-amd64
+	zip -r build/scuttlego/cmd/log-debugger-darwin-amd64.zip build/scuttlego/cmd/log-debugger/darwin-amd64
+
+        # If scuttlego is a main package:
+	zip -r build/scuttlego-linux-amd64.zip build/scuttlego/linux-amd64
+        # Other archives
