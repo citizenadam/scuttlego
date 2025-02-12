@@ -33,7 +33,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: '1.20' # Use the same Go version or a compatible one for release
+          go-version: '1.23.6' # Use the same Go version or a compatible one for release
 
       - name: Build Release Artifacts
         run: make build-release  # Your build command.  Create this target in your Makefile
