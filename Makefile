@@ -32,15 +32,15 @@ tools:
 build-release:
 	mkdir -p build/scuttlego  # Create the nested build directory
 
-        # Example: Build for Linux (adjust as needed)
-        GOOS=linux GOARCH=amd64 go build -o build/scuttlego/scuttlego-linux-amd64 ./...
+	# Example: Build for Linux (adjust as needed)
+	GOOS=linux GOARCH=amd64 go build -o build/scuttlego/scuttlego-linux-amd64 ./...
 
-        # Example: Build for macOS (adjust as needed)
-        GOOS=darwin GOARCH=amd64 go build -o build/scuttlego/scuttlego-darwin-amd64 ./...
+	# Example: Build for macOS (adjust as needed)
+	GOOS=darwin GOARCH=amd64 go build -o build/scuttlego/scuttlego-darwin-amd64 ./...
 
-        # Example: Create zip archives (optional, but recommended)
-        zip -r build/scuttlego/artifact1.zip build/scuttlego/scuttlego-linux-amd64
-        zip -r build/scuttlego/artifact2.zip build/scuttlego/scuttlego-darwin-amd64
+	# Example: Create zip archives (optional, but recommended)
+	zip -r build/scuttlego/artifact1.zip build/scuttlego/scuttlego-linux-amd64
+	zip -r build/scuttlego/artifact2.zip build/scuttlego/scuttlego-darwin-amd64
 
-        # Add other platforms/architectures/archives as needed.
-        # Ensure that the files created here match the paths in your GitHub Actions workflow.
+	# Add other platforms/architectures/archives as needed.
+	# Ensure that the files created here match the paths in your GitHub Actions workflow.
