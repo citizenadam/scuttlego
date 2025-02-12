@@ -1,4 +1,12 @@
-ci: tools test lint generate fmt tidy.PHONY: generate
+.PHONY: ci
+.PHONY: build-release
+.PHONY: generate
+.PHONY: fmt
+.PHONY: test
+.PHONY: tidy
+.PHONY: lint
+.PHONY: tools
+
 generate:
 	go generate./....PHONY: fmt
 fmt:
