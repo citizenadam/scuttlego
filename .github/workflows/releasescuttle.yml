@@ -16,10 +16,27 @@ on:
         required: true
 
 jobs:
+  ci:  # The missing ci job
+    name: Run CI
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        go-version: ['1.23.6'] # Or other Go versions as needed
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.go-version }}
+          cache: 'true'
+
+      - name: Run tests
+        run: make ci  # Your test command
 
   release:
     name: Create Release
-    needs: ci
+    needs: ci  # Now this will work
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'  # Only on pushes to main
     permissions:
@@ -56,5 +73,5 @@ jobs:
             * Changes in this release...
             * ...
           files: |
-            build/scuttlego/artifact1.zip 
-            build/scuttlego/artifact2.tar.gz 
+            build/scuttlego/artifact1.zip  # **REPLACE with your actual artifact path(s)**
+            build/scuttlego/artifact2.tar.gz # **REPLACE with your actual artifact path(s)**
